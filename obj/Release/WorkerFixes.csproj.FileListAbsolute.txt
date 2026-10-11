@@ -1,0 +1,12 @@
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\bin\Release\WorkerFixes.deps.json
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\bin\Release\WorkerFixes.dll
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\bin\Release\WorkerFixes.pdb
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.csproj.AssemblyReference.cache
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.AssemblyInfoInputs.cache
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.AssemblyInfo.cs
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.csproj.CoreCompileInputs.cache
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.dll
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\refint\WorkerFixes.dll
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\WorkerFixes.pdb
+C:\Users\davd\Desktop\dev\.schedule1\WorkerFixes\obj\Release\ref\WorkerFixes.dll
