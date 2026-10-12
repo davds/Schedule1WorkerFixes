@@ -152,10 +152,7 @@ internal static class StationStandPoint
     {
         var employees = UnityEngine.Object.FindObjectsOfType<Employee>();
         if (employees == null || employees.Length == 0)
-        {
-            WorkerFixesLog.Info($"4:00 AM return ({source}): no employees.");
             return;
-        }
 
         var sent = 0;
         for (var i = 0; i < employees.Length; i++)
@@ -170,12 +167,10 @@ internal static class StationStandPoint
                 {
                     RestoreCore(employee, source);
                     DirectToOutdoor(employee, source);
-                }
-                else
-                {
-                    employee.SetWaitOutside(true);
+                    continue;
                 }
 
+                employee.SetWaitOutside(true);
                 sent++;
             }
             catch (Exception exception)
@@ -184,7 +179,8 @@ internal static class StationStandPoint
             }
         }
 
-        WorkerFixesLog.Info($"4:00 AM return ({source}): sent {sent} of {employees.Length} workers outside.");
+        if (sent > 0)
+            WorkerFixesLog.Info($"4:00 AM return ({source}): sent {sent} of {employees.Length} workers outside.");
     }
 
     private static void DirectToOutdoor(Employee employee, string source)

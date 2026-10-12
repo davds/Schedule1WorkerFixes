@@ -17,16 +17,14 @@ public class WorkerFixesMod : MelonMod
     private bool _loggedNoEmployees;
     private float _redirectAfter;
     private int _sentOutsideDay = -1;
+    private float _nextOutsideCheck;
 
     public override void OnInitializeMelon()
     {
         WorkerFixesSettings.Register();
         IdleRouteStore.Load();
         if (!HarmonyInstance.GetPatchedMethods().Any())
-        {
             HarmonyInstance.PatchAll(typeof(WaitOutsidePatch));
-            HarmonyInstance.PatchAll(typeof(ReturnOutsideIdlePatch));
-        }
 
         var patched = HarmonyInstance.GetPatchedMethods().ToList();
         LoggerInstance.Msg($"Workers will idle beside their assigned stations. Patched {patched.Count} method(s).");
@@ -41,6 +39,7 @@ public class WorkerFixesMod : MelonMod
         _loggedNoEmployees = false;
         _redirectAfter = 0f;
         _sentOutsideDay = -1;
+        _nextOutsideCheck = 0f;
         WorkerFixesLog.Info($"Scene initialized: {sceneName} ({buildIndex}).");
     }
 
@@ -114,9 +113,10 @@ public class WorkerFixesMod : MelonMod
             return;
         }
 
-        if (_sentOutsideDay == day)
+        if (_sentOutsideDay == day && Time.time < _nextOutsideCheck)
             return;
 
+        _nextOutsideCheck = Time.time + 1f;
         StationStandPoint.ReleaseAllToOutside("4am");
         _sentOutsideDay = day;
     }
