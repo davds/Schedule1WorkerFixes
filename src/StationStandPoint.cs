@@ -73,6 +73,13 @@ internal static class StationStandPoint
             return;
         }
 
+        if (ReturnOutsideClock.IsInEffect())
+        {
+            RestoreCore(employee, source);
+            DirectToOutdoor(employee, source);
+            return;
+        }
+
         if (!employee.CanWork())
         {
             LogDecision(employee, $"Apply skipped: CanWork is false. {Describe(employee)}");
@@ -139,6 +146,69 @@ internal static class StationStandPoint
 
         idle.IdlePoint = defaultPoint;
         LogDecision(employee, $"Restore returned to {PointName(defaultPoint)} {Describe(employee)}");
+    }
+
+    public static void ReleaseAllToOutside(string source)
+    {
+        var employees = UnityEngine.Object.FindObjectsOfType<Employee>();
+        if (employees == null || employees.Length == 0)
+        {
+            WorkerFixesLog.Info($"4:00 AM return ({source}): no employees.");
+            return;
+        }
+
+        var sent = 0;
+        for (var i = 0; i < employees.Length; i++)
+        {
+            var employee = employees[i];
+            if (employee == null || !employee.IsServer || employee.Fired)
+                continue;
+
+            try
+            {
+                if (employee.IsWaitingOutside)
+                {
+                    RestoreCore(employee, source);
+                    DirectToOutdoor(employee, source);
+                }
+                else
+                {
+                    employee.SetWaitOutside(true);
+                }
+
+                sent++;
+            }
+            catch (Exception exception)
+            {
+                WorkerFixesLog.Error($"4:00 AM return failed for {Describe(employee)}: {exception}");
+            }
+        }
+
+        WorkerFixesLog.Info($"4:00 AM return ({source}): sent {sent} of {employees.Length} workers outside.");
+    }
+
+    private static void DirectToOutdoor(Employee employee, string source)
+    {
+        if (employee == null || !employee.IsWaitingOutside || employee.Movement == null)
+            return;
+
+        if (!TryGetDefaultPoint(employee, out var point))
+        {
+            LogDecision(employee, $"4:00 AM return ({source}) skipped: no property idle point. {Describe(employee)}");
+            return;
+        }
+
+        var idle = employee.WaitOutside;
+        if (idle == null)
+            return;
+
+        if (idle.IdlePoint != point)
+            idle.IdlePoint = point;
+        if (idle.IsAtIdleLocation())
+            return;
+
+        employee.Movement.SetDestination(point.position);
+        LogDecision(employee, $"4:00 AM return ({source}) walking to {PointName(point)} {Describe(employee)}");
     }
 
     private static bool SafeCanWork(Employee employee)

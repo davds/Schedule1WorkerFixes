@@ -16,13 +16,17 @@ public class WorkerFixesMod : MelonMod
     private bool _loggedNotServer;
     private bool _loggedNoEmployees;
     private float _redirectAfter;
+    private int _sentOutsideDay = -1;
 
     public override void OnInitializeMelon()
     {
         WorkerFixesSettings.Register();
         IdleRouteStore.Load();
         if (!HarmonyInstance.GetPatchedMethods().Any())
+        {
             HarmonyInstance.PatchAll(typeof(WaitOutsidePatch));
+            HarmonyInstance.PatchAll(typeof(ReturnOutsideIdlePatch));
+        }
 
         var patched = HarmonyInstance.GetPatchedMethods().ToList();
         LoggerInstance.Msg($"Workers will idle beside their assigned stations. Patched {patched.Count} method(s).");
@@ -36,12 +40,13 @@ public class WorkerFixesMod : MelonMod
         _loggedNotServer = false;
         _loggedNoEmployees = false;
         _redirectAfter = 0f;
+        _sentOutsideDay = -1;
         WorkerFixesLog.Info($"Scene initialized: {sceneName} ({buildIndex}).");
     }
 
     public override void OnUpdate()
     {
-        if (_redirectedExistingIdle || !WorkerFixesSettings.Enabled.Value)
+        if (!WorkerFixesSettings.Enabled.Value)
             return;
 
         if (!InstanceFinder.IsServer)
@@ -54,6 +59,11 @@ public class WorkerFixesMod : MelonMod
 
             return;
         }
+
+        TrySendOutsideAt4Am();
+
+        if (_redirectedExistingIdle)
+            return;
 
         if (_redirectAfter <= 0f)
             _redirectAfter = Time.time + 5f;
@@ -85,5 +95,29 @@ public class WorkerFixesMod : MelonMod
 
         WorkerFixesLog.Info($"Idle scan: {employees.Length} employees, {waiting} already waiting outside.");
         _redirectedExistingIdle = true;
+    }
+
+    private void TrySendOutsideAt4Am()
+    {
+        if (WorkerFixesSettings.ReturnOutsideAt4Am == null || !WorkerFixesSettings.ReturnOutsideAt4Am.Value)
+        {
+            _sentOutsideDay = -1;
+            return;
+        }
+
+        if (!ReturnOutsideClock.TryGetState(out var inWindow, out var day))
+            return;
+
+        if (!inWindow)
+        {
+            _sentOutsideDay = -1;
+            return;
+        }
+
+        if (_sentOutsideDay == day)
+            return;
+
+        StationStandPoint.ReleaseAllToOutside("4am");
+        _sentOutsideDay = day;
     }
 }

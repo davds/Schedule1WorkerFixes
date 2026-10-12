@@ -2,7 +2,7 @@
 
 A [MelonLoader](https://melonwiki.xyz/) mod for Schedule I. Between tasks, employees stand beside their work instead of walking outside and waiting there.
 
-It covers botanists, chemists, handlers, and cleaners. At the end of a shift, or when an employee is unpaid and cannot work, they still use the game's outdoor idle spot.
+It covers botanists, chemists, handlers, and cleaners. At the end of a shift, or when an employee is unpaid and cannot work, they still use the game's outdoor idle spot. With the 4:00 AM option on, every worker also walks back outside at 4:00 AM and stays there until morning.
 
 ## Install
 
@@ -42,6 +42,7 @@ After the first launch, edit `UserData\MelonPreferences.cfg` under the `WorkerFi
 | --- | --- | --- |
 | Enabled | true | Turn idle retargeting on or off. |
 | StandDistance | 0 | How far, in meters, they stand off the access point. Values are kept between 0 and 4. |
+| ReturnOutsideAt4Am | true | At 4:00 AM, send every worker back to the outdoor idle spot until morning. |
 | DebugLogging | true | Write each idle decision to the MelonLoader log. The same decision is not repeated. |
 
 Logs are in the game's `MelonLoader\Logs` folder. Lines from this mod start with `[Worker_Fixes]`.
